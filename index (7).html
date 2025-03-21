@@ -1,0 +1,367 @@
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>
+   Dashboard
+  </title>
+  <script src="https://cdn.tailwindcss.com">
+  </script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js">
+  </script>
+  <style>
+   .sidebar {
+            transition: transform 0.3s ease;
+        }
+        .sidebar-hidden {
+            transform: translateX(-100%);
+        }
+  </style>
+ </head>
+ <body class="bg-gray-100">
+  <div class="flex flex-col min-h-screen">
+   <!-- Header -->
+   <header class="bg-gray-800 text-white p-4 flex justify-between items-center sticky top-0 z-10">
+    <div class="flex items-center">
+     <div class="text-xl font-bold mr-8">
+      INSA ERP
+     </div>
+     <button class="mr-4" id="toggleSidebar">
+      <i class="fas fa-bars">
+      </i>
+     </button>
+    </div>
+    <div class="flex items-center">
+     <input class="border rounded px-4 py-2 mr-4" placeholder="Search" type="text"/>
+     <img alt="User profile picture" class="w-10 h-10 rounded-full" src="https://placehold.co/50x50"/>
+    </div>
+   </header>
+   <div class="flex flex-1">
+    <!-- Sidebar -->
+    <div class="w-64 bg-gray-800 text-white flex flex-col sidebar sticky top-0" id="sidebar">
+     <ul class="mt-6 flex-1">
+      <li class="px-4 py-2 hover:bg-gray-700">
+       <i class="fas fa-tachometer-alt mr-2">
+       </i>
+       Dashboard
+      </li>
+      <li class="px-4 py-2 hover:bg-gray-700">
+       <i class="fas fa-money-check-alt mr-2">
+       </i>
+       Payroll
+      </li>
+      <li class="px-4 py-2 hover:bg-gray-700">
+       <i class="fas fa-shopping-cart mr-2">
+       </i>
+       Procurement
+      </li>
+      <li class="px-4 py-2 hover:bg-gray-700">
+       <i class="fas fa-boxes mr-2">
+       </i>
+       Material Management
+      </li>
+      <li class="px-4 py-2 hover:bg-gray-700">
+       <i class="fas fa-search mr-2">
+       </i>
+       Lookup Manager
+      </li>
+      <li class="px-4 py-2 hover:bg-gray-700">
+       <i class="fas fa-users mr-2">
+       </i>
+       HR Management
+      </li>
+      <li class="px-4 py-2 hover:bg-gray-700">
+       <i class="fas fa-user mr-2">
+       </i>
+       Profile
+      </li>
+      <li class="px-4 py-2 hover:bg-gray-700">
+       <i class="fas fa-file-invoice-dollar mr-2">
+       </i>
+       Internal Revenue Finance
+      </li>
+      <li class="px-4 py-2 hover:bg-gray-700">
+       <i class="fas fa-layer-group mr-2">
+       </i>
+       Layouts
+      </li>
+      <li class="px-4 py-2 hover:bg-gray-700">
+       <i class="fas fa-file-alt mr-2">
+       </i>
+       Pages
+      </li>
+     </ul>
+    </div>
+    <!-- Main Content -->
+    <div class="flex-1 p-6">
+     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <div class="bg-blue-500 text-white p-2 rounded">
+       <h2 class="text-lg">
+        HR manager
+       </h2>
+       <button class="mt-2 bg-blue-700 px-2 py-1 rounded text-sm">
+        View Details
+       </button>
+      </div>
+      <div class="bg-yellow-500 text-white p-2 rounded">
+       <h2 class="text-lg">
+        Payroll
+       </h2>
+       <button class="mt-2 bg-yellow-700 px-2 py-1 rounded text-sm">
+        View Details
+       </button>
+      </div>
+      <div class="bg-green-500 text-white p-2 rounded">
+       <h2 class="text-lg">
+        Procurement
+       </h2>
+       <button class="mt-2 bg-green-700 px-2 py-1 rounded text-sm">
+        View Details
+       </button>
+      </div>
+      <div class="bg-red-500 text-white p-2 rounded">
+       <h2 class="text-lg">
+        Lookup
+       </h2>
+       <button class="mt-2 bg-red-700 px-2 py-1 rounded text-sm">
+        View Details
+       </button>
+      </div>
+     </div>
+     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
+      <div class="bg-white p-4 rounded shadow">
+       <h2 class="text-xl font-bold mb-4">
+        Area Chart
+       </h2>
+       <canvas id="areaChart">
+       </canvas>
+      </div>
+      <div class="bg-white p-4 rounded shadow">
+       <h2 class="text-xl font-bold mb-4">
+        HR employees based on department
+       </h2>
+       <canvas id="pieChart">
+       </canvas>
+      </div>
+     </div>
+     <div class="bg-white p-4 rounded shadow mb-6">
+      <h2 class="text-xl font-bold mb-4">
+       Employee Table
+      </h2>
+      <div class="overflow-x-auto">
+       <table class="min-w-full bg-white" id="employeeTable">
+        <thead>
+         <tr>
+          <th class="py-2 px-4 border-b-2 border-gray-200 bg-gray-100 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">
+           Name
+          </th>
+          <th class="py-2 px-4 border-b-2 border-gray-200 bg-gray-100 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">
+           Department
+          </th>
+          <th class="py-2 px-4 border-b-2 border-gray-200 bg-gray-100 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">
+           Position
+          </th>
+          <th class="py-2 px-4 border-b-2 border-gray-200 bg-gray-100 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">
+           Salary
+          </th>
+         </tr>
+        </thead>
+        <tbody>
+         <tr>
+          <td class="py-2 px-4 border-b border-gray-200">
+           John Doe
+          </td>
+          <td class="py-2 px-4 border-b border-gray-200">
+           Engineering
+          </td>
+          <td class="py-2 px-4 border-b border-gray-200">
+           Software Engineer
+          </td>
+          <td class="py-2 px-4 border-b border-gray-200">
+           $100,000
+          </td>
+         </tr>
+         <tr>
+          <td class="py-2 px-4 border-b border-gray-200">
+           Jane Smith
+          </td>
+          <td class="py-2 px-4 border-b border-gray-200">
+           Management
+          </td>
+          <td class="py-2 px-4 border-b border-gray-200">
+           Project Manager
+          </td>
+          <td class="py-2 px-4 border-b border-gray-200">
+           $120,000
+          </td>
+         </tr>
+         <tr>
+          <td class="py-2 px-4 border-b border-gray-200">
+           Bob Johnson
+          </td>
+          <td class="py-2 px-4 border-b border-gray-200">
+           Economics
+          </td>
+          <td class="py-2 px-4 border-b border-gray-200">
+           Economist
+          </td>
+          <td class="py-2 px-4 border-b border-gray-200">
+           $90,000
+          </td>
+         </tr>
+         <tr>
+          <td class="py-2 px-4 border-b border-gray-200">
+           Alice Brown
+          </td>
+          <td class="py-2 px-4 border-b border-gray-200">
+           Marketing
+          </td>
+          <td class="py-2 px-4 border-b border-gray-200">
+           Marketing Specialist
+          </td>
+          <td class="py-2 px-4 border-b border-gray-200">
+           $80,000
+          </td>
+         </tr>
+         <tr>
+          <td class="py-2 px-4 border-b border-gray-200">
+           Charlie Davis
+          </td>
+          <td class="py-2 px-4 border-b border-gray-200">
+           Others
+          </td>
+          <td class="py-2 px-4 border-b border-gray-200">
+           Administrative Assistant
+          </td>
+          <td class="py-2 px-4 border-b border-gray-200">
+           $50,000
+          </td>
+         </tr>
+         <!-- Add more rows as needed -->
+        </tbody>
+       </table>
+      </div>
+      <div class="mt-4 flex justify-between items-center">
+       <button class="bg-gray-800 text-white px-4 py-2 rounded" id="prevPage">
+        Previous
+       </button>
+       <span id="pageInfo">
+       </span>
+       <button class="bg-gray-800 text-white px-4 py-2 rounded" id="nextPage">
+        Next
+       </button>
+      </div>
+     </div>
+    </div>
+   </div>
+   <!-- Footer -->
+   <footer class="bg-gray-800 text-white p-4 text-center">
+    © 2023 INSA ERP. All rights reserved.
+   </footer>
+  </div>
+  <script>
+   document.getElementById('toggleSidebar').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.toggle('sidebar-hidden');
+        });
+
+        const areaCtx = document.getElementById('areaChart').getContext('2d');
+        const areaChart = new Chart(areaCtx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                datasets: [{
+                    label: 'Series 1',
+                    data: [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        const pieCtx = document.getElementById('pieChart').getContext('2d');
+        const pieChart = new Chart(pieCtx, {
+            type: 'pie',
+            data: {
+                labels: ['Engineering', 'Management', 'Economics', 'Marketing', 'Others'],
+                datasets: [{
+                    data: [14.8, 4.9, 2.6, 1.5, 5.5],
+                    backgroundColor: ['#4CAF50', '#FF9800', '#F44336', '#2196F3', '#9C27B0'],
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(tooltipItem) {
+                                return tooltipItem.label + ': ' + tooltipItem.raw + ' %';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Pagination
+        const rowsPerPage = 3;
+        let currentPage = 1;
+
+        function displayTablePage(page) {
+            const table = document.getElementById('employeeTable');
+            const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+            const totalRows = rows.length;
+            const totalPages = Math.ceil(totalRows / rowsPerPage);
+
+            for (let i = 0; i < totalRows; i++) {
+                rows[i].style.display = 'none';
+            }
+
+            const start = (page - 1) * rowsPerPage;
+            const end = start + rowsPerPage;
+
+            for (let i = start; i < end && i < totalRows; i++) {
+                rows[i].style.display = '';
+            }
+
+            document.getElementById('pageInfo').textContent = `Page ${page} of ${totalPages}`;
+            document.getElementById('prevPage').disabled = page === 1;
+            document.getElementById('nextPage').disabled = page === totalPages;
+        }
+
+        document.getElementById('prevPage').addEventListener('click', function() {
+            if (currentPage > 1) {
+                currentPage--;
+                displayTablePage(currentPage);
+            }
+        });
+
+        document.getElementById('nextPage').addEventListener('click', function() {
+            const table = document.getElementById('employeeTable');
+            const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+            const totalRows = rows.length;
+            const totalPages = Math.ceil(totalRows / rowsPerPage);
+
+            if (currentPage < totalPages) {
+                currentPage++;
+                displayTablePage(currentPage);
+            }
+        });
+
+        displayTablePage(currentPage);
+  </script>
+ </body>
+</html>

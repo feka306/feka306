@@ -1,0 +1,264 @@
+Here’s how to rewrite the provided code into a React-based Next.js project, with an appropriate folder structure.
+
+Folder Structure
+bash
+Copy
+Edit
+/your-nextjs-project
+├── /components
+│   ├── /Header.js
+│   ├── /Sidebar.js
+│   ├── /Dashboard.js
+│   ├── /ChartCard.js
+│   ├── /EmployeeTable.js
+│   └── /Footer.js
+├── /pages
+│   ├── /_app.js
+│   ├── /index.js
+├── /public
+│   └── (static assets like images, fonts)
+├── /styles
+│   ├── /globals.css
+│   └── /tailwind.css
+└── package.json
+Code Implementation
+1. components/Header.js
+jsx
+Copy
+Edit
+import Image from 'next/image';
+
+export default function Header({ toggleSidebar }) {
+  return (
+    <header className="bg-gray-800 text-white p-4 flex justify-between items-center sticky top-0 z-10">
+      <div className="flex items-center">
+        <div className="text-xl font-bold mr-8">INSA ERP</div>
+        <button className="mr-4" onClick={toggleSidebar}>
+          <i className="fas fa-bars"></i>
+        </button>
+      </div>
+      <div className="flex items-center">
+        <input
+          type="text"
+          className="border rounded px-4 py-2 mr-4"
+          placeholder="Search"
+        />
+        <Image
+          src="/placeholder-user.jpg"
+          alt="User profile picture"
+          width={40}
+          height={40}
+          className="rounded-full"
+        />
+      </div>
+    </header>
+  );
+}
+2. components/Sidebar.js
+jsx
+Copy
+Edit
+export default function Sidebar({ isVisible }) {
+  return (
+    <aside
+      className={`w-64 bg-gray-800 text-white flex flex-col sticky top-0 ${
+        isVisible ? '' : '-translate-x-full'
+      } transform transition-transform duration-300`}
+    >
+      <ul className="mt-6 flex-1">
+        {[
+          { icon: 'fas fa-tachometer-alt', label: 'Dashboard' },
+          { icon: 'fas fa-money-check-alt', label: 'Payroll' },
+          { icon: 'fas fa-shopping-cart', label: 'Procurement' },
+          { icon: 'fas fa-boxes', label: 'Material Management' },
+          { icon: 'fas fa-search', label: 'Lookup Manager' },
+          { icon: 'fas fa-users', label: 'HR Management' },
+          { icon: 'fas fa-user', label: 'Profile' },
+          { icon: 'fas fa-file-invoice-dollar', label: 'Internal Revenue Finance' },
+          { icon: 'fas fa-layer-group', label: 'Layouts' },
+          { icon: 'fas fa-file-alt', label: 'Pages' },
+        ].map((item, idx) => (
+          <li
+            key={idx}
+            className="px-4 py-2 hover:bg-gray-700 flex items-center"
+          >
+            <i className={`${item.icon} mr-2`}></i>
+            {item.label}
+          </li>
+        ))}
+      </ul>
+    </aside>
+  );
+}
+3. components/Dashboard.js
+jsx
+Copy
+Edit
+import ChartCard from './ChartCard';
+import EmployeeTable from './EmployeeTable';
+
+export default function Dashboard() {
+  return (
+    <main className="flex-1 p-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <ChartCard color="blue" title="HR Manager" />
+        <ChartCard color="yellow" title="Payroll" />
+        <ChartCard color="green" title="Procurement" />
+        <ChartCard color="red" title="Lookup" />
+      </div>
+      <EmployeeTable />
+    </main>
+  );
+}
+4. components/ChartCard.js
+jsx
+Copy
+Edit
+export default function ChartCard({ color, title }) {
+  return (
+    <div className={`bg-${color}-500 text-white p-2 rounded`}>
+      <h2 className="text-lg">{title}</h2>
+      <button className={`mt-2 bg-${color}-700 px-2 py-1 rounded text-sm`}>
+        View Details
+      </button>
+    </div>
+  );
+}
+5. components/EmployeeTable.js
+jsx
+Copy
+Edit
+import { useState } from 'react';
+
+export default function EmployeeTable() {
+  const rows = [
+    { name: 'John Doe', department: 'Engineering', position: 'Software Engineer', salary: '$100,000' },
+    { name: 'Jane Smith', department: 'Management', position: 'Project Manager', salary: '$120,000' },
+    { name: 'Bob Johnson', department: 'Economics', position: 'Economist', salary: '$90,000' },
+    { name: 'Alice Brown', department: 'Marketing', position: 'Marketing Specialist', salary: '$80,000' },
+    { name: 'Charlie Davis', department: 'Others', position: 'Administrative Assistant', salary: '$50,000' },
+  ];
+
+  const rowsPerPage = 3;
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const totalPages = Math.ceil(rows.length / rowsPerPage);
+
+  const paginatedRows = rows.slice(
+    (currentPage - 1) * rowsPerPage,
+    currentPage * rowsPerPage
+  );
+
+  return (
+    <div className="bg-white p-4 rounded shadow">
+      <h2 className="text-xl font-bold mb-4">Employee Table</h2>
+      <div className="overflow-x-auto">
+        <table className="min-w-full bg-white">
+          <thead>
+            <tr>
+              {['Name', 'Department', 'Position', 'Salary'].map((header) => (
+                <th
+                  key={header}
+                  className="py-2 px-4 border-b-2 border-gray-200 bg-gray-100 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider"
+                >
+                  {header}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {paginatedRows.map((row, idx) => (
+              <tr key={idx}>
+                {Object.values(row).map((cell, i) => (
+                  <td key={i} className="py-2 px-4 border-b border-gray-200">
+                    {cell}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <div className="mt-4 flex justify-between items-center">
+        <button
+          className="bg-gray-800 text-white px-4 py-2 rounded"
+          disabled={currentPage === 1}
+          onClick={() => setCurrentPage((prev) => prev - 1)}
+        >
+          Previous
+        </button>
+        <span>{`Page ${currentPage} of ${totalPages}`}</span>
+        <button
+          className="bg-gray-800 text-white px-4 py-2 rounded"
+          disabled={currentPage === totalPages}
+          onClick={() => setCurrentPage((prev) => prev + 1)}
+        >
+          Next
+        </button>
+      </div>
+    </div>
+  );
+}
+6. components/Footer.js
+jsx
+Copy
+Edit
+export default function Footer() {
+  return (
+    <footer className="bg-gray-800 text-white p-4 text-center">
+      © 2023 INSA ERP. All rights reserved.
+    </footer>
+  );
+}
+7. pages/index.js
+jsx
+Copy
+Edit
+import { useState } from 'react';
+import Header from '../components/Header';
+import Sidebar from '../components/Sidebar';
+import Dashboard from '../components/Dashboard';
+import Footer from '../components/Footer';
+
+export default function Home() {
+  const [sidebarVisible, setSidebarVisible] = useState(true);
+
+  return (
+    <div className="flex flex-col min-h-screen">
+      <Header toggleSidebar={() => setSidebarVisible((prev) => !prev)} />
+      <div className="flex flex-1">
+        <Sidebar isVisible={sidebarVisible} />
+        <Dashboard />
+      </div>
+      <Footer />
+    </div>
+  );
+}
+8. styles/globals.css
+css
+Copy
+Edit
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+Add Tailwind to your project:
+Run:
+
+bash
+Copy
+Edit
+npm install -D tailwindcss postcss autoprefixer
+npx tailwindcss init
+Tailwind tailwind.config.js:
+
+js
+Copy
+Edit
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: ['./pages/**/*.{js,ts,jsx,tsx}', './components/**/*.{js,ts,jsx,tsx}'],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+};
